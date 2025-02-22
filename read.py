@@ -9,7 +9,7 @@ import json
 
 
 mail = imp.IMAP4_SSL("imap.gmail.com")
-mail.login("", "")  #User credentials
+mail.login("adithreganti@gmail.com", "zkuf ffzp gwan hngs")  #User credentials
 mail.select("inbox")
 
 
@@ -39,22 +39,28 @@ def FindCostFromGivenDate(dt):
             if isinstance(i, tuple):  
                 raw_email = i[1]
                 msg = email.message_from_bytes(raw_email)
-            
+                arr=(msg.__getitem__('Date').split(',')[1].split('+')[0].split(" "))
+               
+                dateP=arr[1]+'-'+arr[2]+'-'+arr[3]
+              
+
 
            
             body = ""
             if msg.is_multipart(): 
                 for part in msg.walk():
                     content_type = part.get_content_type()
+                    
+                    
                     if(content_type=='text/html'):
                         
 
 
-                
+                      
                         try:
-                                # print(part)
+                                
                                 html = part.get_payload(decode=True).decode()
-                                # print(html)
+                               
                                 soup = BeautifulSoup(html, "html.parser")
                                 body = soup.get_text(separator="\n", strip=True)  
                         except:
@@ -103,7 +109,8 @@ def FindCostFromGivenDate(dt):
 
                         df = pd.read_csv('database.csv')
                         df["Date"] = pd.to_datetime(df['Date'])
-                        new_row = {'Date': date, 'UPI_id': Upi_id, 'Shop': Shop_name, 'Amount': cost}
+                        date_cv = pd.to_datetime(dateP, format="%d-%b-%Y")
+                        new_row = {'Date': date_cv, 'UPI_id': Upi_id, 'Shop': Shop_name, 'Amount': cost}
                         df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
                         df = df.sort_values(by='Date')
                         df.to_csv('database.csv', index=False)
